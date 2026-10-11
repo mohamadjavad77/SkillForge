@@ -1,0 +1,61 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Publish Blazor WASM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish Web
+        run: >
+          dotnet publish src/SkillForge.Web/SkillForge.Web.csproj
+          --configuration Release
+          -o published
+
+      - name: Prepare static site for GitHub Pages
+        run: |
+          SITE_ROOT="published/wwwroot"
+          # Project site URL: https://mohamadjavad77.github.io/SkillForge/
+          sed -i 's|<base href="/" />|<base href="/SkillForge/" />|g' "$SITE_ROOT/index.html"
+          # Disable Jekyll so _framework folder is served
+          touch "$SITE_ROOT/.nojekyll"
+          # SPA deep-link fallback
+          cp "$SITE_ROOT/index.html" "$SITE_ROOT/404.html"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: published/wwwroot
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
