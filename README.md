@@ -38,14 +38,50 @@ src/
 dotnet restore SkillForge.sln
 dotnet build SkillForge.sln
 
-# Run the API
-dotnet run --project src/SkillForge.Api
+# Run the API (migrates + seeds on startup by default)
+dotnet run --project src/SkillForge.Api --urls http://127.0.0.1:43124
 
 # Run the Blazor WebAssembly client
 dotnet run --project src/SkillForge.Web
 ```
 
-Configure the PostgreSQL connection string in `src/SkillForge.Api/appsettings.json` (or via user secrets / environment variables) before running the API against a database.
+Swagger UI: `http://127.0.0.1:43124/swagger`
+
+### Connection string & JWT
+
+Edit `src/SkillForge.Api/appsettings.json` (or override via environment variables):
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=skillforge;Username=skillforge;Password=skillforge"
+  },
+  "Jwt": {
+    "Issuer": "SkillForge",
+    "Audience": "SkillForge",
+    "Key": "SkillForge_Dev_SigningKey_ChangeInProduction_32+chars!",
+    "ExpirationMinutes": 120
+  },
+  "Database": {
+    "MigrateOnStartup": true
+  }
+}
+```
+
+Environment variable overrides:
+
+```bash
+export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=skillforge;Username=skillforge;Password=skillforge"
+export Jwt__Key="YOUR_LONG_SECRET_AT_LEAST_32_CHARS!!!!"
+```
+
+### Seeded admin
+
+| Email | Password |
+| --- | --- |
+| `admin@skillforge.local` | `Admin@SkillForge2026!` |
+
+Auth endpoints: `POST /api/auth/register`, `POST /api/auth/login`
 
 ### Optional: PostgreSQL via Docker
 
