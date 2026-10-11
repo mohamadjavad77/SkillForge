@@ -58,6 +58,23 @@ docker run --name skillforge-pg \
   -d postgres:16
 ```
 
+## CI/CD
+
+GitHub Actions workflows live under `.github/workflows/`:
+
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| `ci.yml` | push / PR to `main` | Restore + Release build of the full solution |
+| `deploy-pages.yml` | push to `main` | Publish `SkillForge.Web` (Blazor WASM) to GitHub Pages |
+
+### GitHub Pages
+
+After Pages is enabled (Settings → Pages → Source: **GitHub Actions**), the client is available at:
+
+**https://mohamadjavad77.github.io/SkillForge/**
+
+> Note: GitHub Pages hosts the **Blazor WebAssembly** static client only. The API (`SkillForge.Api`) and PostgreSQL need a separate host (Azure, Fly.io, Docker VPS, etc.).
+
 ## License
 
 Proprietary — all rights reserved.
