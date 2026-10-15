@@ -1,13 +1,17 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using SkillForge.Application.Abstractions;
 using SkillForge.Application.DependencyInjection;
 using SkillForge.Api.Middleware;
+using SkillForge.Api.Services;
 using SkillForge.Infrastructure.DependencyInjection;
 using SkillForge.Infrastructure.Persistence.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 

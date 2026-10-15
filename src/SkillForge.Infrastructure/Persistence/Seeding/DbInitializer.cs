@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SkillForge.Core.Entities;
 using SkillForge.Core.Enums;
 using SkillForge.Core.Interfaces;
+using SkillForge.Core.Services;
 
 namespace SkillForge.Infrastructure.Persistence.Seeding;
 
@@ -116,7 +117,7 @@ public static class DbInitializer
         var skills = catalog.Select(item => new Skill
         {
             Name = item.Name,
-            NormalizedName = Normalize(item.Name),
+            NormalizedName = SkillNormalizer.Normalize(item.Name),
             Category = item.Category,
             IsApproved = true
         }).ToList();
@@ -125,7 +126,4 @@ public static class DbInitializer
         await db.SaveChangesAsync(cancellationToken);
         logger.LogInformation("Seeded {Count} skills", skills.Count);
     }
-
-    public static string Normalize(string name) =>
-        name.Trim().ToUpperInvariant();
 }

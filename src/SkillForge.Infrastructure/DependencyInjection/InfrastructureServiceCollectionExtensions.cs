@@ -5,9 +5,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SkillForge.Application.Auth;
+using SkillForge.Application.Bookings;
+using SkillForge.Application.Profiles;
+using SkillForge.Application.Scorecards;
+using SkillForge.Application.Skills;
 using SkillForge.Core.Interfaces;
 using SkillForge.Infrastructure.Identity;
 using SkillForge.Infrastructure.Persistence;
+using SkillForge.Infrastructure.Services;
 
 namespace SkillForge.Infrastructure.DependencyInjection;
 
@@ -29,6 +34,11 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ISkillService, SkillService>();
+        services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<ISlotService, SlotService>();
+        services.AddScoped<IBookingService, BookingService>();
+        services.AddScoped<IScorecardService, ScorecardService>();
 
         var jwt = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
             ?? throw new InvalidOperationException("Jwt configuration section is missing.");
